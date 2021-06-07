@@ -1,6 +1,5 @@
-#include <DHT.h>
-
 #include <TMP36.h>
+#include <SD.h>
 
 #include <SPI.h>
 #include <Wire.h>
@@ -10,18 +9,14 @@
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
-#define DHTPIN 3
-#define DHTTYPE DHT11   // DHT 21 (AM2301)
 
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 TMP36 tmp36_5v(A3, 5);
 long lastTmpCheckLastMillis = 0;
-long lastDhtMillis = 0;
 
 //TMP36 tmp36_3v(A2, 3.3);
-DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
@@ -30,7 +25,6 @@ void setup() {
   }
   Serial.begin(9600);
   lastTmpCheckLastMillis = millis();
-  lastDhtMillis = millis();
 }
 
 void loop() {
@@ -40,60 +34,10 @@ void loop() {
   //testSize2();
   //testdrawstyles();
   //Serial.println("test...");
-  checkDHT();
   
   //checktmp36();
   delay(3000);
   //Serial.println("test 2....");
-}
-void checkDHT(){
-    if ((millis() - lastDhtMillis) < 10000){
-    return;
-  }
-  // Reading temperature or humidity takes about 250 milliseconds!
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  //float h = dht.readHumidity();
-  // Read temperature as Celsius (the default)
-  //float t = dht.readTemperature();
-  // Read temperature as Fahrenheit (isFahrenheit = true)
-  float f = dht.readTemperature(true);
-//  Serial.println(h);
-//  Serial.println(t);
-  Serial.println(f);
-//  // Check if any reads failed and exit early (to try again).
-  if (isnan(f)){
-  //if (isnan(h) || isnan(t) || isnan(f)) {
-    Serial.println(F("Failed to read from DHT sensor!"));
-    return;
-  }
-
-  // Compute heat index in Fahrenheit (the default)
-//  float hif = dht.computeHeatIndex(f, h);
-//  // Compute heat index in Celsius (isFahreheit = false)
-//  float hic = dht.computeHeatIndex(t, h, false);
-
-//  Serial.print(F("Humidity: "));
-//  Serial.print(h);
-//  Serial.print(F("%  Temperature: "));
-//  Serial.print(t);
-//  Serial.print(F("°C "));
-//  Serial.print(f);
-//  Serial.print(F("°F  Heat index: "));
-//  Serial.print(hic);
-//  Serial.print(F("°C "));
-//  Serial.print(hif);
-//  Serial.println(F("°F"));
-
-display.setTextSize(2);      // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE); // Draw white text
-  display.setCursor(3, 2);     // Start at top-left corner
-  
-  display.cp437(true);       
-  
-  display.println(F("°F"));
-lastDhtMillis = millis();
- // delay(3000);
-  
 }
 
 void checktmp36(){
